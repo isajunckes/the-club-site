@@ -200,6 +200,53 @@ body{
 /* O menu hambúrguer é mantido em todas as larguras de tela, inclusive
    desktop — por preferência de design, sem alternar para menu horizontal. */
 
+/* ---------- Header da Home: logo script + nav horizontal no desktop ---- */
+.site-nav-home{
+  gap: 16px;
+  background: #410D14;
+}
+.site-nav-brand-script{
+  font-family: var(--script);
+  font-size: 30px;
+  line-height: 1;
+  color: #FFFFFF;
+  text-decoration: none;
+}
+.site-nav-links-desktop{ display: none; }
+.site-nav-home-right{
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+@media (min-width: 760px){
+  .site-nav-home{ padding: 28px 48px; }
+  .site-nav-brand-script{ font-size: 32px; }
+  .site-nav-links-desktop{
+    display: flex;
+    align-items: center;
+    gap: 26px;
+  }
+  .site-nav-link-desktop{
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.75);
+    text-decoration: none;
+    padding-bottom: 6px;
+    border-bottom: 1px solid transparent;
+    transition: color .2s ease, border-color .2s ease;
+  }
+  .site-nav-link-desktop:hover,
+  .site-nav-link-desktop.is-active{
+    color: #FFFFFF;
+    border-bottom-color: var(--gold-light);
+  }
+  .site-nav-home .site-nav-toggle{ display: none; }
+}
+
 /* ---------- Landing / Home (vitrine) ------------------------------------ */
 .landing-hero{
   text-align: center;
@@ -240,7 +287,7 @@ body{
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: clamp(80px, 14vh, 160px) 0 56px;
+  padding: clamp(56px, 9vh, 110px) 0 clamp(56px, 9vh, 110px);
   width: 100vw;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
@@ -253,6 +300,7 @@ body{
 }
 .landing-hero-bordeaux h1{
   color: #FFFFFF;
+  margin-top: 72px;
 }
 .landing-hero-bordeaux .landing-hero-local{
   color: #E3C99A;
@@ -264,6 +312,63 @@ body{
   letter-spacing: .3px;
   max-width: 460px;
   line-height: 1.6;
+}
+
+/* ---------- Boas-vindas, tagline e seta de rolagem do hero da home ----- */
+.landing-hero-scroll{
+  display: inline-flex;
+  margin-top: 18px;
+  color: rgba(255,255,255,.55);
+  animation: hero-scroll-bounce 2.2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce){
+  .landing-hero-scroll{ animation: none; }
+}
+@keyframes hero-scroll-bounce{
+  0%, 100%{ transform: translateY(0); }
+  50%{ transform: translateY(6px); }
+}
+
+/* ---------- Barra de estatísticas logo abaixo do hero da home ---------- */
+.landing-stats-bar{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px 20px;
+  padding: 36px 28px;
+}
+.landing-stats-bar-item{
+  text-align: center;
+}
+.landing-stats-bar-item svg{
+  width: 26px;
+  height: 26px;
+  color: var(--bordeaux-dk);
+  margin-bottom: 10px;
+}
+.landing-stats-bar-numero{
+  display: block;
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.landing-stats-bar-legenda{
+  font-family: var(--sans);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+@media (min-width: 760px){
+  .landing-stats-bar{
+    grid-template-columns: repeat(4, 1fr);
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 48px 56px;
+  }
 }
 /* Variante compacta: usada em páginas internas (Experiências, Marcas...)
    — mesmo visual bordô/branco da home, porém com o título menor, já
@@ -629,10 +734,21 @@ body{
   border: 1px solid var(--line);
   border-radius: 18px;
   padding: 30px 24px;
+  box-shadow: 0 1px 2px rgba(56,16,27,.04);
+  transition: box-shadow .25s ease, transform .25s ease, border-color .25s ease;
+}
+.plano-item:hover{
+  box-shadow: 0 14px 28px rgba(56,16,27,.1);
+  transform: translateY(-3px);
+  border-color: var(--gold-light);
 }
 .plano-item-premium{
   background: var(--bordeaux-dk);
   border-color: var(--bordeaux-dk);
+}
+.plano-item-premium:hover{
+  box-shadow: 0 16px 32px rgba(0,0,0,.28);
+  border-color: var(--gold);
 }
 .plano-item-premium .plano-nome{ color: var(--cream); }
 .plano-item-premium .plano-desc{ color: rgba(250,246,239,.85); }
@@ -645,8 +761,21 @@ body{
   font-weight: 400;
   font-size: 28px;
   color: var(--bordeaux-dk);
-  margin: 0 0 8px;
+  margin: 0 0 14px;
+  position: relative;
+  padding-bottom: 12px;
 }
+.plano-nome::after{
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 32px;
+  height: 1px;
+  background: var(--gold-light);
+}
+.plano-item-premium .plano-nome::after{ background: rgba(250,246,239,.35); }
 .plano-premium{
   display: inline-block;
   font-family: var(--sans);
@@ -1343,7 +1472,8 @@ body{
   color: var(--ink-soft);
   margin-bottom: 8px;
 }
-.field input{
+.field input,
+.field select{
   width: 100%;
   border: none;
   border-bottom: 1px solid var(--line);
@@ -1357,8 +1487,10 @@ body{
   outline: none;
   transition: border-color .2s ease;
 }
+.field select{ appearance: none; }
 .field input::placeholder{ color: #C9B9AE; }
-.field input:focus{ border-bottom-color: var(--gold); }
+.field input:focus,
+.field select:focus{ border-bottom-color: var(--gold); }
 .field input:invalid.touched{ border-bottom-color: var(--danger); }
 .field .error{
   display: none;
@@ -1460,6 +1592,15 @@ details.terms[open] summary::after{ content: "–"; }
   border-top: 1px solid var(--line);
   text-align: left;
 }
+.plano-dados-label{
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 0 0 10px;
+}
 .plano-compra .consent{ margin: 0 0 16px; }
 .plano-compra .consent label{
   font-size: 12px;
@@ -1533,6 +1674,13 @@ details.terms[open] summary::after{ content: "–"; }
   border-radius: 18px;
   padding: 24px 20px;
   text-align: center;
+  box-shadow: 0 1px 2px rgba(56,16,27,.04);
+  transition: box-shadow .25s ease, transform .25s ease, border-color .25s ease;
+}
+.produto-item:hover{
+  box-shadow: 0 14px 28px rgba(56,16,27,.1);
+  transform: translateY(-3px);
+  border-color: var(--gold-light);
 }
 .produto-imagem{
   width: 100%;
@@ -1556,13 +1704,15 @@ details.terms[open] summary::after{ content: "–"; }
   font-weight: 700;
   font-size: 18px;
   color: var(--bordeaux-dk);
-  margin: 0 0 6px;
+  margin: 0 0 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--gold-light);
 }
 .produto-preco{
-  font-family: var(--sans);
-  font-weight: 600;
-  font-size: 16px;
-  color: var(--ink);
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 17px;
+  color: var(--gold);
   margin: 0 0 18px;
 }
 .produto-comprar-btn{
@@ -1747,6 +1897,12 @@ details.terms[open] summary::after{ content: "–"; }
 .produto-detalhe-info .produto-comprar-btn{ margin-top: 18px; }
 .produto-item .produto-prazo{ margin: 0 0 16px; }
 .plano-item-premium .plano-compra{ border-top-color: rgba(250,246,239,.18); }
+.plano-item-premium .plano-compra .field label{ color: rgba(250,246,239,.7); }
+.plano-item-premium .plano-compra .field input,
+.plano-item-premium .plano-compra .field select{ color: var(--cream); border-bottom-color: rgba(250,246,239,.35); }
+.plano-item-premium .plano-compra .field input::placeholder{ color: rgba(250,246,239,.5); }
+.plano-item-premium .plano-compra .field select option{ color: var(--ink); }
+.plano-item-premium .plano-dados-label{ color: rgba(250,246,239,.7); }
 .plano-item-premium .plano-compra .consent label{ color: rgba(250,246,239,.85); }
 .plano-item-premium .plano-compra .consent-link{ color: var(--gold-light); }
 .plano-item-premium .plano-comprar-btn{ background: var(--cream); color: var(--bordeaux-dk); }
@@ -3225,7 +3381,7 @@ O The Club não armazena dados de cartão de crédito ou outras informações fi
 
 3. Cancelamento, desistência e não comparecimento
 Os ingressos adquiridos para as experiências do The Club não são reembolsáveis em caso de desistência ou cancelamento por iniciativa da participante.
-Quando previsto na Política de Cancelamento da experiência, o valor pago poderá ser convertido em crédito para utilização em uma próxima experiência do The Club, observadas as condições e prazos informados pela organização.
+Quando previsto na Política de Cancelamento do The Club, igual para todas as experiências, o valor pago poderá ser convertido em crédito para utilização em uma próxima experiência do The Club, observadas as condições e prazos informados pela organização.
 O não comparecimento ao evento, independentemente do motivo, será considerado desistência, não gerando direito automático a reembolso ou crédito.
 Ingressos e créditos não poderão ser utilizados após o prazo informado pela organização.
 
@@ -3263,7 +3419,7 @@ A participante deverá manter comportamento respeitoso durante toda a experiênc
 Condutas que comprometam a segurança, o bem-estar ou o funcionamento da experiência poderão resultar na retirada da participante do evento, sem direito a reembolso ou compensação.
 
 11. Aceite dos Termos
-Antes de concluir a inscrição e realizar o pagamento, a participante deverá declarar expressamente que leu e concorda com estes Termos e Condições e com a Política de Cancelamento aplicável à experiência.
+Antes de concluir a inscrição e realizar o pagamento, a participante deverá declarar expressamente que leu e concorda com estes Termos e Condições e com a Política de Cancelamento do The Club.
 A confirmação do aceite e a realização do pagamento representam concordância integral com as condições aqui estabelecidas.
 
 12. Disposições finais
@@ -3287,6 +3443,7 @@ Os valores pagos pela contratação de um plano de ativação não são reembols
 4. Alteração ou cancelamento do evento pelo The Club
 O The Club poderá alterar data, horário, local ou programação do evento vinculado à ativação quando necessário por questões operacionais, climáticas, de segurança, indisponibilidade de fornecedores ou situações de força maior.
 Quando houver alteração ou adiamento, a marca será comunicada pelos canais informados no momento da contratação, e a ativação será mantida para a nova data definida pela organização.
+Caso a marca não possa participar da nova data definida, deverá informar o The Club no momento em que for comunicada da alteração, hipótese em que o valor pago será convertido em crédito para uma futura ativação, válido por 3 meses a partir da data original do evento, observada a disponibilidade de segmento/categoria ainda não ocupado no novo evento escolhido.
 
 5. Entrega dos benefícios
 Os benefícios de cada plano (espaço de exposição/ativação, menção nos stories, registro fotográfico, divulgação no grupo do The Club, entre outros conforme o plano contratado) serão entregues nos termos descritos na página de parcerias.
@@ -3309,6 +3466,7 @@ O The Club não se responsabiliza por perda, furto, dano ou extravio de objetos 
 9. Dados da marca
 Os dados fornecidos pela marca (razão social, responsável, contato, entre outros) serão utilizados para identificação, organização logística da ativação e comunicação sobre a parceria.
 Os dados não serão comercializados ou compartilhados com terceiros para fins alheios à parceria contratada, ressalvadas as situações necessárias à execução do serviço, cumprimento de obrigações legais ou exercício regular de direitos.
+Nos termos da Lei Geral de Proteção de Dados (LGPD), a pessoa responsável indicada pela marca pode, a qualquer momento, solicitar acesso, correção ou exclusão de seus dados pessoais, entrando em contato pelo e-mail thecluboficialbr@gmail.com ou pelo WhatsApp do The Club.
 
 10. Exclusividade por segmento
 Quando informada exclusividade por categoria/segmento para determinada experiência, ela é válida apenas para aquela edição específica do evento, não se estendendo automaticamente a edições futuras, salvo acordo expresso em contrário.
@@ -3330,7 +3488,13 @@ Após a confirmação do pagamento, a vaga fica reservada exclusivamente para a 
 
 Os ingressos não são reembolsáveis em caso de desistência ou cancelamento por parte da participante.
 
-Em caso de impossibilidade de comparecimento, o valor pago poderá ser convertido em crédito para outra experiência do The Club, desde que a participante avise com no mínimo 5 dias úteis de antecedência em relação à data da experiência, conforme disponibilidade e condições informadas pela organização.
+Em caso de impossibilidade de comparecimento, o valor pago poderá ser convertido em crédito para outra experiência do The Club, desde que a participante avise pelo WhatsApp do The Club ((48) 98457-0967) com no mínimo 5 dias úteis de antecedência em relação à data da experiência, conforme disponibilidade e condições informadas pela organização.
+
+Avisos recebidos com menos de 5 dias úteis de antecedência não garantem a conversão em crédito, aplicando-se a regra geral de não reembolso e não conversão em caso de desistência.
+
+O crédito gerado terá validade de 3 meses a partir da data da experiência original e deverá ser utilizado dentro desse prazo, sob pena de perda do valor.
+
+O crédito poderá ser transferido para outra pessoa, desde que a participante avise o The Club com no mínimo 5 dias úteis de antecedência em relação à data da experiência em que o crédito será utilizado.
 
 Em caso de cancelamento ou alteração da experiência por decisão do The Club, inclusive em razão de condições climáticas quando aplicável, a participante será comunicada e receberá as orientações referentes à transferência para nova data ou crédito.
 
@@ -3412,7 +3576,7 @@ Seus dados são usados para: confirmar sua vaga na experiência escolhida, entra
 
 COM QUEM COMPARTILHAMOS
 
-Seus dados de pagamento são processados diretamente pelo Mercado Pago, seguindo as políticas de segurança e privacidade da própria plataforma. Não vendemos nem compartilhamos seus dados com terceiros para fins de marketing de outras marcas.
+Seus dados de pagamento são processados diretamente pelo Mercado Pago, seguindo as políticas de segurança e privacidade da própria plataforma. Quando a experiência exigir cadastro junto a órgãos, estabelecimentos ou parceiros para viabilizar sua realização (por exemplo, cadastro no local do evento), os dados necessários para esse fim específico poderão ser compartilhados com esses parceiros. Não vendemos nem compartilhamos seus dados com terceiros para fins de marketing de outras marcas.
 
 ONDE SEUS DADOS FICAM ARMAZENADOS
 
@@ -3761,18 +3925,46 @@ function renderHub(mensagem) {
     : `<p class="hub-vazio">Nenhuma experiência disponível no momento.<br>Novidades em breve — fique de olho no nosso Instagram e WhatsApp!</p>`;
 
   document.getElementById("app").innerHTML = `
-    ${renderNavHeader("bordeaux")}
+    ${renderNavHeader("home")}
 
     <section class="landing-hero landing-hero-bordeaux" id="topo">
       <div class="landing-hero-bordeaux-inner">
         <h1>The Club</h1>
+        <a href="#proximos-eventos" class="landing-hero-scroll" aria-label="Ver próximos eventos">
+          <svg width="20" height="28" viewBox="0 0 20 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="10" y1="0" x2="10" y2="24" stroke="currentColor" stroke-width="1"/>
+            <path d="M2 17L10 25L18 17" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+    </section>
+
+    <section class="landing-stats-bar">
+      <div class="landing-stats-bar-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8.5" cy="8" r="3"/><circle cx="16" cy="9" r="2.4"/><path d="M2.5 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M14.2 14.3c2.6.3 4.8 2.5 4.8 5.2"/></svg>
+        <span class="landing-stats-bar-numero">+1.500</span>
+        <span class="landing-stats-bar-legenda">Mulheres conectadas</span>
+      </div>
+      <div class="landing-stats-bar-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="3" y="4.5" width="18" height="16" rx="2"/><line x1="3" y1="9.5" x2="21" y2="9.5"/><line x1="8" y1="2.5" x2="8" y2="6.5"/><line x1="16" y1="2.5" x2="16" y2="6.5"/></svg>
+        <span class="landing-stats-bar-numero">Toda semana</span>
+        <span class="landing-stats-bar-legenda">Novas experiências</span>
+      </div>
+      <div class="landing-stats-bar-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 21s7-6.3 7-12a7 7 0 0 0-14 0c0 5.7 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg>
+        <span class="landing-stats-bar-numero">Florianópolis</span>
+        <span class="landing-stats-bar-legenda">E região</span>
+      </div>
+      <div class="landing-stats-bar-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 20.5s-8-5-8-11.2A4.8 4.8 0 0 1 12 6.5a4.8 4.8 0 0 1 8 2.8c0 6.2-8 11.2-8 11.2z"/></svg>
+        <span class="landing-stats-bar-numero">Conexões</span>
+        <span class="landing-stats-bar-legenda">De verdade</span>
       </div>
     </section>
 
     <div class="divider"><span class="mark"></span></div>
 
-    <section class="landing-section">
-      <h2 class="proximos-eventos-titulo">Próximos eventos</h2>
+    <section class="landing-section" id="proximos-eventos">
       ${avisoHtml}
       <div class="agenda-list">${cardsHtml}</div>
     </section>
@@ -3786,12 +3978,6 @@ function renderHub(mensagem) {
         <p class="landing-hero-texto" style="margin-top:14px;">Os eventos são pensados para serem fora do óbvio, para proporcionar experiências lindas e acolhedoras que tiram você da rotina, despertam algo novo e, sobretudo, criam conexões reais.</p>
         <p class="landing-hero-texto" style="margin-top:14px;">Aqui, você pode chegar sozinha e encontrar uma mesa cheia de novas possibilidades: uma nova amizade, uma boa conversa, uma inspiração ou simplesmente uma memória que vai ficar.</p>
         <p class="landing-hero-texto" style="margin-top:14px;">Mais do que eventos, são momentos para serem vividos, compartilhados e lembrados.</p>
-        <div class="landing-stat-grupo">
-          <div class="landing-stat">
-            <span class="landing-stat-numero">+1.500</span>
-            <span class="landing-stat-legenda">mulheres conectadas</span>
-          </div>
-        </div>
       </div>
     </section>
 
@@ -3818,7 +4004,7 @@ function renderHub(mensagem) {
         </details>
         <details class="faq-item">
           <summary>Posso cancelar minha inscrição?</summary>
-          <p>Os ingressos não são reembolsáveis em caso de desistência, mas o valor pode ser convertido em crédito para outra experiência, conforme a Política de Cancelamento apresentada no checkout de cada evento.</p>
+          <p>Os ingressos não são reembolsáveis em caso de desistência, mas o valor pode ser convertido em crédito para outra experiência, conforme a Política de Cancelamento do The Club, apresentada abaixo no checkout.</p>
         </details>
         <details class="faq-item">
           <summary>O que acontece se chover?</summary>
@@ -3935,8 +4121,38 @@ function renderFormatosGridHtml(formatosUnicos) {
     .join("");
 }
 
-function renderNavHeader(variant) {
-  const overlay = variant === "bordeaux";
+function renderNavHeader(variant, activePage) {
+  const overlay = variant === "bordeaux" || variant === "home";
+  const ativo = (pagina) => (pagina === (activePage || "eventos") ? " is-active" : "");
+
+  if (variant === "home") {
+    return `
+    <header class="site-nav site-nav-overlay site-nav-home">
+      <a href="?#topo" class="site-nav-brand-script" aria-label="The Club">The Club</a>
+      <nav class="site-nav-links-desktop">
+        <a href="?#proximos-eventos" class="site-nav-link-desktop${ativo("eventos")}">Próximos eventos</a>
+        <a href="?pagina=experiencias" class="site-nav-link-desktop${ativo("experiencias")}">Experiências</a>
+        <a href="?pagina=marcas" class="site-nav-link-desktop${ativo("marcas")}">Marcas</a>
+        <a href="?pagina=loja" class="site-nav-link-desktop${ativo("loja")}">Loja The Club</a>
+        <a href="?#contato" class="site-nav-link-desktop${ativo("contato")}">Contato</a>
+      </nav>
+      <div class="site-nav-home-right">
+        <button type="button" class="site-nav-toggle" id="nav-toggle" aria-label="Abrir menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </header>
+
+    <nav class="site-nav-menu" id="nav-menu">
+      <button type="button" class="site-nav-close" id="nav-close" aria-label="Fechar menu">×</button>
+      <a href="?#topo" class="site-nav-link">The Club</a>
+      <a href="?pagina=experiencias" class="site-nav-link">Experiências</a>
+      <a href="?pagina=marcas" class="site-nav-link site-nav-link-marcas">Marcas</a>
+      <a href="?pagina=loja" class="site-nav-link">Loja The Club</a>
+      <a href="?#contato" class="site-nav-link">Contato</a>
+    </nav>`;
+  }
+
   return `
     <header class="site-nav${overlay ? " site-nav-overlay" : ""}">
       <a href="?" class="site-nav-brand${overlay ? " site-nav-back" : ""}"${overlay ? ' aria-label="The Club"' : ""}>${overlay ? "←" : "The Club"}</a>
@@ -4041,7 +4257,7 @@ function renderLoja() {
   setMetaDescricao("Loja oficial do The Club: moletom e boné com a identidade da marca.");
 
   document.getElementById("app").innerHTML = `
-    ${renderNavHeader("bordeaux")}
+    ${renderNavHeader("home", "loja")}
 
     <section class="landing-hero landing-hero-bordeaux landing-hero-bordeaux--compacta" id="topo">
       <div class="landing-hero-bordeaux-inner">
@@ -4444,7 +4660,7 @@ function renderExperiencias() {
   const galeriaHtmlExperiencias = galeriaFotosHtmlExperiencias + galeriaEventosHtmlExperiencias;
 
   document.getElementById("app").innerHTML = `
-    ${renderNavHeader("bordeaux")}
+    ${renderNavHeader("home", "experiencias")}
 
     <section class="landing-hero landing-hero-bordeaux landing-hero-bordeaux--compacta" id="topo">
       <div class="landing-hero-bordeaux-inner">
@@ -4492,12 +4708,24 @@ function renderMarcasFotosHtml() {
     </section>`;
 }
 
+function renderOpcoesEventosMarca() {
+  const paraData = (str) => {
+    const [dia, mes, ano] = str.split("/");
+    return new Date(`${ano}-${mes}-${dia}`);
+  };
+  return Object.values(EVENTOS)
+    .slice()
+    .sort((a, b) => paraData(a.data) - paraData(b.data))
+    .map((ev) => `<option value="${ev.nome} — ${ev.data}">${ev.nome} — ${ev.data}</option>`)
+    .join("");
+}
+
 function renderComercial() {
   document.title = "The Club · Parcerias com marcas";
   setMetaDescricao("Sua marca ao lado de uma comunidade feminina engajada em Florianópolis. Conheça as possibilidades de ativação, patrocínio e permuta nas experiências do The Club.");
 
   document.getElementById("app").innerHTML = `
-    ${renderNavHeader("bordeaux")}
+    ${renderNavHeader("home", "marcas")}
 
     <section class="landing-hero landing-hero-bordeaux landing-hero-bordeaux--compacta" id="topo">
       <div class="landing-hero-bordeaux-inner">
@@ -4521,14 +4749,37 @@ function renderComercial() {
             <li>Divulgação da marca no grupo após o evento</li>
           </ul>
           <div class="plano-compra">
+            <p class="plano-dados-label">Dados da marca</p>
+            <div class="field" id="field-plano-essencial-nomeMarca">
+              <input type="text" id="plano-essencial-nomeMarca" placeholder="Nome da marca / razão social">
+            </div>
+            <div class="field" id="field-plano-essencial-responsavel">
+              <input type="text" id="plano-essencial-responsavel" placeholder="Nome do responsável">
+            </div>
+            <div class="field" id="field-plano-essencial-email">
+              <input type="email" id="plano-essencial-email" placeholder="E-mail">
+            </div>
+            <div class="field" id="field-plano-essencial-whatsapp">
+              <input type="tel" id="plano-essencial-whatsapp" placeholder="WhatsApp com DDD">
+            </div>
+            <div class="field" id="field-plano-essencial-segmento">
+              <input type="text" id="plano-essencial-segmento" placeholder="Segmento da marca (ex: moda, beleza, alimentação)">
+            </div>
+            <div class="field" id="field-plano-essencial-evento">
+              <select id="plano-essencial-evento">
+                <option value="">Qual evento a marca quer participar?</option>
+                ${renderOpcoesEventosMarca()}
+              </select>
+            </div>
             <div class="consent">
               <input type="checkbox" id="aceite-essencial" class="plano-aceite-checkbox" data-plano="essencial">
               <label for="aceite-essencial">Li e concordo com os <a class="consent-link" href="?pagina=marcas-termos" target="_blank" rel="noopener">Termos de Parceria</a> do The Club.</label>
             </div>
-            <a class="plano-comprar-btn agenda-comprar-btn-desativado" id="comprar-essencial" data-plano-btn="essencial" href="https://mpago.la/1g8L8tJ" target="_blank" rel="noopener">
+            <a class="plano-comprar-btn agenda-comprar-btn-desativado" id="comprar-essencial" data-plano-btn="essencial" data-plano-nome="Plano Essencial" data-plano-valor="R$ 500,00" href="https://mpago.la/1g8L8tJ" target="_blank" rel="noopener">
               Comprar este plano
               <span class="plano-comprar-valor">R$ 500,00</span>
             </a>
+            <p class="status-msg" id="plano-essencial-status-msg"></p>
           </div>
         </div>
         <div class="plano-item">
@@ -4541,14 +4792,37 @@ function renderComercial() {
             <li>Divulgação da marca no grupo após o evento</li>
           </ul>
           <div class="plano-compra">
+            <p class="plano-dados-label">Dados da marca</p>
+            <div class="field" id="field-plano-experiencia-nomeMarca">
+              <input type="text" id="plano-experiencia-nomeMarca" placeholder="Nome da marca / razão social">
+            </div>
+            <div class="field" id="field-plano-experiencia-responsavel">
+              <input type="text" id="plano-experiencia-responsavel" placeholder="Nome do responsável">
+            </div>
+            <div class="field" id="field-plano-experiencia-email">
+              <input type="email" id="plano-experiencia-email" placeholder="E-mail">
+            </div>
+            <div class="field" id="field-plano-experiencia-whatsapp">
+              <input type="tel" id="plano-experiencia-whatsapp" placeholder="WhatsApp com DDD">
+            </div>
+            <div class="field" id="field-plano-experiencia-segmento">
+              <input type="text" id="plano-experiencia-segmento" placeholder="Segmento da marca (ex: moda, beleza, alimentação)">
+            </div>
+            <div class="field" id="field-plano-experiencia-evento">
+              <select id="plano-experiencia-evento">
+                <option value="">Qual evento a marca quer participar?</option>
+                ${renderOpcoesEventosMarca()}
+              </select>
+            </div>
             <div class="consent">
               <input type="checkbox" id="aceite-experiencia" class="plano-aceite-checkbox" data-plano="experiencia">
               <label for="aceite-experiencia">Li e concordo com os <a class="consent-link" href="?pagina=marcas-termos" target="_blank" rel="noopener">Termos de Parceria</a> do The Club.</label>
             </div>
-            <a class="plano-comprar-btn agenda-comprar-btn-desativado" id="comprar-experiencia" data-plano-btn="experiencia" href="https://mpago.la/1UM4qFn" target="_blank" rel="noopener">
+            <a class="plano-comprar-btn agenda-comprar-btn-desativado" id="comprar-experiencia" data-plano-btn="experiencia" data-plano-nome="Plano Experiência" data-plano-valor="R$ 600,00" href="https://mpago.la/1UM4qFn" target="_blank" rel="noopener">
               Comprar este plano
               <span class="plano-comprar-valor">R$ 600,00</span>
             </a>
+            <p class="status-msg" id="plano-experiencia-status-msg"></p>
           </div>
         </div>
         <div class="plano-item plano-item-premium">
@@ -4563,14 +4837,37 @@ function renderComercial() {
             <li>Divulgação da marca no grupo após o evento</li>
           </ul>
           <div class="plano-compra">
+            <p class="plano-dados-label">Dados da marca</p>
+            <div class="field" id="field-plano-protagonista-nomeMarca">
+              <input type="text" id="plano-protagonista-nomeMarca" placeholder="Nome da marca / razão social">
+            </div>
+            <div class="field" id="field-plano-protagonista-responsavel">
+              <input type="text" id="plano-protagonista-responsavel" placeholder="Nome do responsável">
+            </div>
+            <div class="field" id="field-plano-protagonista-email">
+              <input type="email" id="plano-protagonista-email" placeholder="E-mail">
+            </div>
+            <div class="field" id="field-plano-protagonista-whatsapp">
+              <input type="tel" id="plano-protagonista-whatsapp" placeholder="WhatsApp com DDD">
+            </div>
+            <div class="field" id="field-plano-protagonista-segmento">
+              <input type="text" id="plano-protagonista-segmento" placeholder="Segmento da marca (ex: moda, beleza, alimentação)">
+            </div>
+            <div class="field" id="field-plano-protagonista-evento">
+              <select id="plano-protagonista-evento">
+                <option value="">Qual evento a marca quer participar?</option>
+                ${renderOpcoesEventosMarca()}
+              </select>
+            </div>
             <div class="consent">
               <input type="checkbox" id="aceite-protagonista" class="plano-aceite-checkbox" data-plano="protagonista">
               <label for="aceite-protagonista">Li e concordo com os <a class="consent-link" href="?pagina=marcas-termos" target="_blank" rel="noopener">Termos de Parceria</a> do The Club.</label>
             </div>
-            <a class="plano-comprar-btn agenda-comprar-btn-desativado" id="comprar-protagonista" data-plano-btn="protagonista" href="https://mpago.la/19dGkhv" target="_blank" rel="noopener">
+            <a class="plano-comprar-btn agenda-comprar-btn-desativado" id="comprar-protagonista" data-plano-btn="protagonista" data-plano-nome="Plano Protagonista" data-plano-valor="R$ 750,00" href="https://mpago.la/19dGkhv" target="_blank" rel="noopener">
               Comprar este plano
               <span class="plano-comprar-valor">R$ 750,00</span>
             </a>
+            <p class="status-msg" id="plano-protagonista-status-msg"></p>
           </div>
         </div>
       </div>
@@ -4700,10 +4997,83 @@ function renderComercial() {
 function setupPlanoCompra() {
   document.querySelectorAll(".plano-aceite-checkbox").forEach((checkbox) => {
     const plano = checkbox.dataset.plano;
+    const prefix = `plano-${plano}`;
     const btn = document.querySelector(`[data-plano-btn="${plano}"]`);
     if (!btn) return;
+
     checkbox.addEventListener("change", () => {
       btn.classList.toggle("agenda-comprar-btn-desativado", !checkbox.checked);
+    });
+
+    btn.addEventListener("click", async (evento) => {
+      evento.preventDefault();
+      if (btn.classList.contains("agenda-comprar-btn-desativado") || btn.disabled) return;
+
+      const nomeMarcaEl = document.getElementById(`${prefix}-nomeMarca`);
+      const responsavelEl = document.getElementById(`${prefix}-responsavel`);
+      const emailEl = document.getElementById(`${prefix}-email`);
+      const whatsappEl = document.getElementById(`${prefix}-whatsapp`);
+      const segmentoEl = document.getElementById(`${prefix}-segmento`);
+      const eventoEl = document.getElementById(`${prefix}-evento`);
+      const statusMsg = document.getElementById(`${prefix}-status-msg`);
+
+      const nomeMarca = nomeMarcaEl.value.trim();
+      const responsavel = responsavelEl.value.trim();
+      const email = emailEl.value.trim();
+      const whatsapp = whatsappEl.value.trim();
+      const segmento = segmentoEl.value.trim();
+      const eventoDesejado = eventoEl.value;
+
+      document.getElementById(`field-${prefix}-nomeMarca`).classList.toggle("has-error", !nomeMarca);
+      document.getElementById(`field-${prefix}-responsavel`).classList.toggle("has-error", !responsavel);
+      document.getElementById(`field-${prefix}-email`).classList.toggle("has-error", !email.includes("@"));
+      document.getElementById(`field-${prefix}-whatsapp`).classList.toggle("has-error", whatsapp.length < 10);
+      document.getElementById(`field-${prefix}-segmento`).classList.toggle("has-error", !segmento);
+      document.getElementById(`field-${prefix}-evento`).classList.toggle("has-error", !eventoDesejado);
+
+      if (!nomeMarca || !responsavel || !email.includes("@") || whatsapp.length < 10 || !segmento || !eventoDesejado || !checkbox.checked) {
+        statusMsg.textContent = "Preencha os dados da marca antes de continuar.";
+        statusMsg.className = "status-msg show error";
+        return;
+      }
+
+      const mpUrl = btn.getAttribute("href");
+      if (!mpUrl || mpUrl.startsWith("COLE_AQUI")) {
+        statusMsg.textContent = "Este plano ainda não tem um link de pagamento configurado. Avise a organização.";
+        statusMsg.className = "status-msg show error";
+        return;
+      }
+
+      btn.classList.add("agenda-comprar-btn-desativado");
+      const textoOriginal = btn.innerHTML;
+      btn.textContent = "Registrando...";
+      statusMsg.textContent = "Só um instante, estamos registrando os dados da sua marca...";
+      statusMsg.className = "status-msg show loading";
+
+      const registro = {
+        tipo: "Marca",
+        nomeMarca,
+        responsavel,
+        email,
+        whatsapp,
+        segmento,
+        eventoDesejado,
+        plano: btn.dataset.planoNome,
+        valor: btn.dataset.planoValor,
+        versaoTermos: "v1.0",
+        dataHoraAceite: new Date().toISOString(),
+        statusPagamento: "Pendente",
+        origem: window.location.href,
+      };
+
+      await registrarAceite(registro);
+
+      btn.classList.remove("agenda-comprar-btn-desativado");
+      btn.innerHTML = textoOriginal;
+      statusMsg.textContent = "Dados registrados! Você será direcionada ao Mercado Pago.";
+      statusMsg.className = "status-msg show success";
+
+      window.open(mpUrl, "_blank", "noopener");
     });
   });
 }

@@ -4574,6 +4574,12 @@ function setupProdutoMoletom(prefix, corLabel) {
     statusMsg.textContent = "Só um instante, estamos registrando seu pedido...";
     statusMsg.className = "status-msg show loading";
 
+    // Abre a aba já aqui, ainda dentro do clique do usuário — se
+    // esperarmos o registro terminar antes de abrir, o navegador não
+    // reconhece mais como ação direta do usuário e bloqueia o pop-up
+    // silenciosamente (sem mostrar nenhum erro).
+    const novaAba = window.open("", "_blank");
+
     const registro = {
       nome,
       whatsapp,
@@ -4595,7 +4601,11 @@ function setupProdutoMoletom(prefix, corLabel) {
     statusMsg.textContent = "Pedido registrado! Você será direcionada ao Mercado Pago.";
     statusMsg.className = "status-msg show success";
 
-    window.open(mpUrl, "_blank", "noopener");
+    if (novaAba) {
+      novaAba.location.href = mpUrl;
+    } else {
+      window.open(mpUrl, "_blank", "noopener");
+    }
   });
 }
 
@@ -4636,6 +4646,8 @@ function setupProdutoBone() {
     statusMsg.textContent = "Só um instante, estamos registrando seu pedido...";
     statusMsg.className = "status-msg show loading";
 
+    const novaAba = window.open("", "_blank");
+
     const registro = {
       nome,
       whatsapp,
@@ -4655,7 +4667,11 @@ function setupProdutoBone() {
     statusMsg.textContent = "Pedido registrado! Você será direcionada ao Mercado Pago.";
     statusMsg.className = "status-msg show success";
 
-    window.open(mpUrl, "_blank", "noopener");
+    if (novaAba) {
+      novaAba.location.href = mpUrl;
+    } else {
+      window.open(mpUrl, "_blank", "noopener");
+    }
   });
 }
 
@@ -4677,6 +4693,40 @@ function renderTermosMarcas() {
 
     <section class="landing-section" id="termos-marca">
       <div class="terms-body">${TERMOS_MARCAS_TEXTO}</div>
+    </section>
+
+    ${renderRodape()}
+  `;
+}
+
+function renderMarcasObrigada() {
+  document.title = "The Club · Cadastro recebido";
+  setMetaDescricao("Recebemos o cadastro da sua marca para ativação com o The Club.");
+
+  document.getElementById("app").innerHTML = `
+    ${renderNavHeader("bordeaux", "marcas")}
+
+    <section class="landing-hero landing-hero-bordeaux landing-hero-bordeaux--compacta landing-hero-bordeaux--marcas" id="topo">
+      <div class="landing-hero-bordeaux-inner">
+        <h1 class="hero-titulo-caixa-alta hero-titulo-caixa-alta--menor">Cadastro recebido!</h1>
+      </div>
+    </section>
+
+    <div class="divider"><span class="mark"></span></div>
+
+    <section class="landing-section">
+      <div style="max-width: 560px; margin: 0 auto; text-align: center;">
+        <p class="plano-desc" style="font-size: 16px; line-height: 1.7;">
+          Recebemos os dados da sua marca e o registro do plano de ativação com o The Club.
+        </p>
+        <p class="plano-desc" style="font-size: 16px; line-height: 1.7;">
+          Nossa equipe vai confirmar sua participação e os próximos passos <strong>via WhatsApp, em até 2 dias úteis</strong>.
+        </p>
+        <p class="plano-desc" style="font-size: 16px; line-height: 1.7;">
+          Qualquer dúvida antes disso, é só chamar a gente pelo WhatsApp comercial do The Club.
+        </p>
+        <a class="back-link" href="?pagina=marcas" style="display: inline-block; margin-top: 24px;">← Voltar para a página de Marcas</a>
+      </div>
     </section>
 
     ${renderRodape()}
@@ -5143,6 +5193,12 @@ function setupPlanoCompra() {
       statusMsg.textContent = "Só um instante, estamos registrando os dados da sua marca...";
       statusMsg.className = "status-msg show loading";
 
+      // Abre a aba já aqui, ainda dentro do clique do usuário — se
+      // esperarmos o registro terminar antes de abrir, o navegador não
+      // reconhece mais como ação direta do usuário e bloqueia o pop-up
+      // silenciosamente (sem mostrar nenhum erro).
+      const novaAba = window.open("", "_blank");
+
       const registro = {
         tipo: "Marca",
         nomeMarca,
@@ -5166,7 +5222,13 @@ function setupPlanoCompra() {
       statusMsg.textContent = "Dados registrados! Você será direcionada ao Mercado Pago.";
       statusMsg.className = "status-msg show success";
 
-      window.open(mpUrl, "_blank", "noopener");
+      if (novaAba) {
+        novaAba.location.href = mpUrl;
+      } else {
+        // Se o navegador bloqueou mesmo a abertura antecipada (raro),
+        // tenta abrir na hora como último recurso.
+        window.open(mpUrl, "_blank", "noopener");
+      }
     });
   });
 }
@@ -6460,6 +6522,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (pagina === "marcas-termos") {
     renderTermosMarcas();
+    return;
+  }
+
+  if (pagina === "marcas-obrigada") {
+    renderMarcasObrigada();
     return;
   }
 

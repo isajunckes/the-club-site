@@ -1581,6 +1581,13 @@ body{
   transition: border-color .2s ease;
 }
 .field select{ appearance: none; }
+#como-conheceu,
+#companhia{
+  padding-right: 26px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9' fill='none' stroke='%23410D14' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'><path d='M1 1.5l6 6 6-6'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 4px center;
+}
 .field input::placeholder{ color: #C9B9AE; }
 .field input:focus,
 .field select:focus{ border-bottom-color: var(--gold); }
@@ -3386,8 +3393,8 @@ const EVENTOS = {
     subtitulo: "1ª edição — Girls' Night Out sob as estrelas",
     eyebrow: "THE CLUB · EXPERIÊNCIA",
     termoClima: true,
-    data: "29/10/2026",
-    diaSemana: "Quinta-feira",
+    data: "06/11/2026",
+    diaSemana: "Sexta-feira",
     horario: "19h00 às 22h20",
     local: "Deck do SpotMarkt Mall (área externa)",
     mapaUrl: "https://maps.app.goo.gl/8BKsFvJKNm5wsWKu7?g_st=ic",
@@ -4070,8 +4077,125 @@ function getEventoAtual() {
   return ev;
 }
 
+/* ---------- "Como você chegou até este evento?" (dropdown no checkout) ----
+   Opções fixas; "Influenciadora" e "Outro" abrem um campo de texto para a
+   cliente escrever qual. Os valores vão para a planilha nos campos
+   comoConheceu e comoConheceuDetalhe. */
+const COMO_CONHECEU_OPCOES = [
+  "Instagram do The Club",
+  "Grupo VIP do The Club - WhatsApp",
+  "Indicação de uma amiga",
+  "Influenciadora",
+  "Marca parceira",
+  "Outro",
+];
+
+function renderComoConheceuHtml() {
+  const opcoes = COMO_CONHECEU_OPCOES
+    .map((o) => `<option value="${o}">${o}</option>`)
+    .join("");
+  return `
+      <div class="field" id="field-como-conheceu">
+        <label for="como-conheceu">Como você chegou até este evento?</label>
+        <select id="como-conheceu" name="como-conheceu" required>
+          <option value="">Selecione uma opção</option>
+          ${opcoes}
+        </select>
+        <span class="error">Selecione como você chegou até este evento.</span>
+      </div>
+
+      <div class="field" id="field-como-conheceu-detalhe" style="display:none;">
+        <label for="como-conheceu-detalhe" id="como-conheceu-detalhe-label">Qual?</label>
+        <input type="text" id="como-conheceu-detalhe" name="como-conheceu-detalhe" placeholder="" autocomplete="off">
+        <span class="error">Preencha este campo.</span>
+      </div>
+
+      <div class="field" id="field-companhia">
+        <label for="companhia">Você vai sozinha ou acompanhada?</label>
+        <select id="companhia" name="companhia" required>
+          <option value="">Selecione uma opção</option>
+          <option value="Sozinha">Sozinha</option>
+          <option value="Acompanhada">Acompanhada</option>
+        </select>
+        <span class="error">Selecione se você vai sozinha ou acompanhada.</span>
+      </div>`;
+}
+
+function setupComoConheceu(onChange) {
+  const sel = document.getElementById("como-conheceu");
+  const det = document.getElementById("como-conheceu-detalhe");
+  const fieldSel = document.getElementById("field-como-conheceu");
+  const fieldDet = document.getElementById("field-como-conheceu-detalhe");
+  const labelDet = document.getElementById("como-conheceu-detalhe-label");
+  const companhia = document.getElementById("companhia");
+  const fieldCompanhia = document.getElementById("field-companhia");
+
+  const precisaDetalhe = () => ["Influenciadora", "Marca parceira", "Outro"].includes(sel.value);
+
+  function atualizar() {
+    const mostrar = precisaDetalhe();
+    fieldDet.style.display = mostrar ? "" : "none";
+    if (sel.value === "Influenciadora") {
+      labelDet.textContent = "Qual influenciadora?";
+      det.placeholder = "Nome ou @ da influenciadora";
+    } else if (sel.value === "Marca parceira") {
+      labelDet.textContent = "Qual marca?";
+      det.placeholder = "Nome ou @ da marca";
+    } else if (sel.value === "Outro") {
+      labelDet.textContent = "Conta pra gente como foi";
+      det.placeholder = "Como você chegou até o evento?";
+    }
+    if (!mostrar) det.value = "";
+  }
+
+  sel.addEventListener("change", () => { atualizar(); onChange(); });
+  det.addEventListener("input", onChange);
+  companhia.addEventListener("change", onChange);
+
+  return {
+    valido() {
+      if (!sel.value || !companhia.value) return false;
+      return !precisaDetalhe() || det.value.trim().length >= 2;
+    },
+    mostrarErros() {
+      fieldSel.classList.toggle("has-error", !sel.value);
+      fieldCompanhia.classList.toggle("has-error", !companhia.value);
+      fieldDet.classList.toggle("has-error", precisaDetalhe() && det.value.trim().length < 2);
+    },
+    valores() {
+      return {
+        comoConheceu: sel.value,
+        comoConheceuDetalhe: precisaDetalhe() ? det.value.trim() : "",
+        companhia: companhia.value,
+      };
+    },
+  };
+}
+
+// Limpa o número digitado: tira zero à esquerda (ex.: 048...) e o código do
+// Brasil (55) quando a pessoa digita/cola o número completo (+55 48 9...).
+// Só tira o 55 quando passa de 11 dígitos, porque 55 também é um DDD válido
+// (Santa Maria/RS).
+function normalizarWhatsappDigitos(value) {
+  let digits = value.replace(/\D/g, "").replace(/^0+/, "");
+  if (digits.length > 11 && digits.startsWith("55")) digits = digits.slice(2);
+  return digits.slice(0, 11);
+}
+
+const DDDS_VALIDOS_BR = new Set([
+  "11","12","13","14","15","16","17","18","19",
+  "21","22","24","27","28",
+  "31","32","33","34","35","37","38",
+  "41","42","43","44","45","46","47","48","49",
+  "51","53","54","55",
+  "61","62","63","64","65","66","67","68","69",
+  "71","73","74","75","77","79",
+  "81","82","83","84","85","86","87","88","89",
+  "91","92","93","94","95","96","97","98","99",
+]);
+
 function formatWhatsapp(value) {
-  const digits = value.replace(/\D/g, "").slice(0, 11);
+  const digits = normalizarWhatsappDigitos(value);
   if (digits.length <= 2) return digits;
   if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
   return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
@@ -4089,8 +4213,20 @@ function isValidEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
 
+// Celular brasileiro válido: DDD existente + 9 + 8 dígitos (11 dígitos no
+// total), sem o 55. Recusa números claramente falsos (todos iguais ou
+// sequências). Não confirma se o número tem WhatsApp de verdade — isso só
+// é possível com um código de verificação enviado para o número.
 function isValidWhatsapp(value) {
-  return value.replace(/\D/g, "").length >= 10;
+  const d = normalizarWhatsappDigitos(value);
+  if (d.length !== 11) return false;
+  if (!DDDS_VALIDOS_BR.has(d.slice(0, 2))) return false;
+  if (d[2] !== "9") return false;
+  const resto = d.slice(2);
+  if (/^(\d)\1+$/.test(resto)) return false;
+  if (resto === "912345678" || resto === "987654321") return false;
+  if (/^9(\d)\1{7}$/.test(resto)) return false;
+  return true;
 }
 
 function isValidCpf(value) {
@@ -5898,7 +6034,7 @@ function renderEvento(ev) {
       <div class="field" id="field-whatsapp">
         <label for="whatsapp">WhatsApp</label>
         <input type="tel" id="whatsapp" name="whatsapp" placeholder="(48) 99999-9999" inputmode="numeric" autocomplete="tel" required>
-        <span class="error">Informe um WhatsApp válido com DDD.</span>
+        <span class="error">Informe DDD + celular com 9 dígitos, sem o 55. Ex.: (48) 99999-9999.</span>
       </div>
 
       <div class="field" id="field-email">
@@ -5918,6 +6054,8 @@ function renderEvento(ev) {
         <input type="date" id="nascimento" name="nascimento" autocomplete="bday" required>
         <span class="error">Informe sua data de nascimento.</span>
       </div>
+
+      ${renderComoConheceuHtml()}
 
       <div class="divider"><span class="mark"></span></div>
 
@@ -5963,6 +6101,7 @@ function setupForm(ev) {
   const cpf = document.getElementById("cpf");
   const nascimento = document.getElementById("nascimento");
   const aceite = document.getElementById("aceite");
+  const comoConheceu = setupComoConheceu(() => validate());
   const btn = document.getElementById("cta-btn");
   const statusMsg = document.getElementById("status-msg");
 
@@ -5988,6 +6127,7 @@ function setupForm(ev) {
       isValidEmail(email.value) &&
       isValidCpf(cpf.value) &&
       isValidNascimento(nascimento.value) &&
+      comoConheceu.valido() &&
       aceite.checked;
     btn.disabled = !ok;
     return ok;
@@ -6000,6 +6140,7 @@ function setupForm(ev) {
     toggleFieldError("field-email", !isValidEmail(email.value));
     toggleFieldError("field-cpf", !isValidCpf(cpf.value));
     toggleFieldError("field-nascimento", !isValidNascimento(nascimento.value));
+    comoConheceu.mostrarErros();
   }
 
   function toggleFieldError(fieldId, hasError) {
@@ -6027,6 +6168,7 @@ function setupForm(ev) {
     const registro = {
       nome: nome.value.trim(),
       nomeCrianca: nomeCrianca ? nomeCrianca.value.trim() : "",
+      ...comoConheceu.valores(),
       whatsapp: whatsapp.value.trim(),
       email: email.value.trim(),
       cpf: cpf.value.trim(),
@@ -6412,7 +6554,7 @@ function renderCarrinhoCheckout() {
       <div class="field" id="field-whatsapp">
         <label for="whatsapp">WhatsApp</label>
         <input type="tel" id="whatsapp" name="whatsapp" placeholder="(48) 99999-9999" inputmode="numeric" autocomplete="tel" required>
-        <span class="error">Informe um WhatsApp válido com DDD.</span>
+        <span class="error">Informe DDD + celular com 9 dígitos, sem o 55. Ex.: (48) 99999-9999.</span>
       </div>
 
       <div class="field" id="field-email">
@@ -6432,6 +6574,8 @@ function renderCarrinhoCheckout() {
         <input type="date" id="nascimento" name="nascimento" autocomplete="bday" required>
         <span class="error">Informe sua data de nascimento.</span>
       </div>
+
+      ${renderComoConheceuHtml()}
 
       <div class="divider"><span class="mark"></span></div>
 
@@ -6476,6 +6620,7 @@ function setupCarrinhoForm(itens) {
   const cpf = document.getElementById("cpf");
   const nascimento = document.getElementById("nascimento");
   const aceite = document.getElementById("aceite");
+  const comoConheceu = setupComoConheceu(() => validate());
   const btn = document.getElementById("carrinho-cta-btn");
   const statusMsg = document.getElementById("carrinho-status-msg");
 
@@ -6501,6 +6646,7 @@ function setupCarrinhoForm(itens) {
       isValidEmail(email.value) &&
       isValidCpf(cpf.value) &&
       isValidNascimento(nascimento.value) &&
+      comoConheceu.valido() &&
       aceite.checked;
     btn.disabled = !ok;
     return ok;
@@ -6513,6 +6659,7 @@ function setupCarrinhoForm(itens) {
     toggleFieldError("field-email", !isValidEmail(email.value));
     toggleFieldError("field-cpf", !isValidCpf(cpf.value));
     toggleFieldError("field-nascimento", !isValidNascimento(nascimento.value));
+    comoConheceu.mostrarErros();
   }
 
   function toggleFieldError(fieldId, hasError) {
@@ -6543,6 +6690,7 @@ function setupCarrinhoForm(itens) {
     const dadosBase = {
       nome: nome.value.trim(),
       nomeCrianca: nomeCrianca ? nomeCrianca.value.trim() : "",
+      ...comoConheceu.valores(),
       whatsapp: whatsapp.value.trim(),
       email: email.value.trim(),
       cpf: cpf.value.trim(),
@@ -6601,6 +6749,9 @@ function registrarEAvancarPagamento(ev) {
     email: state.dados.email,
     cpf: state.dados.cpf,
     dataNascimento: state.dados.dataNascimento,
+    comoConheceu: state.dados.comoConheceu || "",
+    comoConheceuDetalhe: state.dados.comoConheceuDetalhe || "",
+    companhia: state.dados.companhia || "",
     eventoNome: ev.nome,
     eventoId: ev.id,
     eventoData: ev.data,

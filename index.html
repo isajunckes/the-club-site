@@ -8187,20 +8187,24 @@ function setupOrcamentoForm() {
     try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(textoPedido); copiou = true; } } catch (e) {}
 
     // Guarda o pedido na planilha (aba "Orçamentos") antes de abrir o WhatsApp.
+    // Usa o mesmo canal do checkout (que já funciona); se falhar, tenta o envio direto.
     try {
       if (CONFIG.SHEETS_WEBHOOK_URL && !CONFIG.SHEETS_WEBHOOK_URL.startsWith("COLE_AQUI")) {
-        fetch(CONFIG.SHEETS_WEBHOOK_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({
-            _token: CONFIG.WEBHOOK_TOKEN, _acao: "orcamento",
-            nome: v.nome, empresa: v.empresa || "", email: v.email, whatsapp: v.whats,
-            ocasiao: v.tipo, formatos: formatos.join(", "), pessoas: v.pessoas, data: v.data,
-            local: v.local || "", investimento: v.invest || "", ideia: v.ideia || "",
-            comoConheceu: v.conheceu, participou: v.participou, qualEvento: v.qual || "",
-          }),
-        }).catch(() => {});
+        const corpo = {
+          nome: v.nome, empresa: v.empresa || "", email: v.email, whatsapp: v.whats,
+          ocasiao: v.tipo, formatos: formatos.join(", "), pessoas: v.pessoas, data: v.data,
+          local: v.local || "", investimento: v.invest || "", ideia: (v.ideia || "").slice(0, 1200),
+          comoConheceu: v.conheceu, participou: v.participou, qualEvento: v.qual || "",
+        };
+        chamarServidor("orcamento", corpo).catch(() => {
+          try {
+            fetch(CONFIG.SHEETS_WEBHOOK_URL, {
+              method: "POST", mode: "no-cors", keepalive: true,
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
+              body: JSON.stringify(Object.assign({ _token: CONFIG.WEBHOOK_TOKEN, _acao: "orcamento" }, corpo)),
+            }).catch(() => {});
+          } catch (e2) {}
+        });
       }
     } catch (e) { /* o WhatsApp abre mesmo se o registro falhar */ }
 

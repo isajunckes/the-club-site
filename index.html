@@ -4063,6 +4063,8 @@ const EVENTOS = {
 
   "table-2811": {
     nome: "The Table Talk",
+    esgotado: true, // evento cancelado: vendas bloqueadas
+    publicarEm: "01/01/2030", // fora do ar (mesmo método usado na edição encerrada do Friday Night)
     subtitulo: "Networking à mesa: conexões, negócios e um bom café",
     eyebrow: "THE CLUB · EXPERIÊNCIA",
     data: "28/11/2026",
@@ -6186,10 +6188,8 @@ const EXPERIENCIAS_PORTFOLIO = [
   { nome: "The Flower Workshop Club", foto: "workshop-0310", descricao: "Um workshop de arranjos florais guiado por uma florista, para criar o seu próprio arranjo e viver um momento de criatividade e conexão." },
   { nome: "The Wine Club", foto: "wine-1510", descricao: "Uma noite com boa gastronomia e vinho, em que cada participante pinta e customiza a sua própria taça para levar para casa." },
   { nome: "The Puppy Pilates Club", foto: "puppy-0111", descricao: "Pilates em boa companhia de cachorrinhos, seguido de brunch e de um momento de interação. Uma manhã leve para relaxar e se encantar." },
-  { nome: "The Flower & Flow Club", foto: "flower-flow-publico-0811:g0", descricao: "Pilates, workshop de arranjos florais e coffee, numa manhã para desacelerar, se conectar e criar." },
   { nome: "The Friday Club", foto: "friday-1311", descricao: "Uma sexta à noite para sair da rotina: pintura em cerâmica, jantar com menu especial e vinho, para criar a sua própria peça em boa companhia." },
-  { nome: "The Paddle Club", foto: "paddle-0711", descricao: "Uma manhã de remada em canoa havaiana pela lagoa, para se movimentar em grupo e se conectar com a natureza." },
-  { nome: "The Cine Club", foto: "cine-wine-2910", descricao: "Cinema a céu aberto numa noite para sair da rotina, com vinho, tábua de frios, pipoca e boas companhias." },
+  { nome: "The Paddle Club", foto: "paddle-0612", descricao: "Uma manhã de remada em canoa havaiana pela lagoa, para se movimentar em grupo e se conectar com a natureza." },
   { nome: "The Recovery Club", foto: "recovery-0512", descricao: "Treino funcional de luta, yoga para desacelerar, recovery com banheira de gelo, sauna e massagem, e coffee para fechar a manhã." },
 ];
 
@@ -6975,7 +6975,7 @@ function ckEtapa1() {
     cotar();
   }));
   document.querySelectorAll("[id^='ck-turma-'] select, select[id^='ck-turma-']").forEach((sel) => sel.addEventListener("change", atualizarBotao));
-  const aplicar = () => { CK.cupom = document.getElementById("ck-cupom-input").value.trim().toUpperCase(); cotar(); };
+  const aplicar = () => { CK.cupom = document.getElementById("ck-cupom-input").value.replace(/\s+/g, "").toUpperCase(); cotar(); };
   document.getElementById("ck-cupom-btn").addEventListener("click", aplicar);
   document.getElementById("ck-cupom-input").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); aplicar(); } });
   btn.addEventListener("click", () => {
@@ -8676,7 +8676,7 @@ function renderNotFound() {
 
 // Eventos que já têm preço na aba "Preços" (ids iguais aos da aba). Quando o checkout próprio está ligado,
 // o botão "Garantir minha vaga" desses eventos leva ao checkout novo. Novo evento no checkout: some o id aqui e na aba Preços.
-const CK_IDS_PRECOS = ["recovery-0512", "paddle-0612", "friday-1112", "yoga-1312", "table-2811"];
+const CK_IDS_PRECOS = ["recovery-0512", "paddle-0612", "friday-1112", "yoga-1312"];
 function eventoUsaCheckoutProprio(ev) {
   if (!ev || ev.esgotado || CK_IDS_PRECOS.indexOf(ev.id) === -1) return false;
   return !!CONFIG.CHECKOUT_PROPRIO_ATIVO;
